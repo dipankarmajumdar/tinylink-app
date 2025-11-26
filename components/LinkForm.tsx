@@ -3,13 +3,21 @@
 import isUrl from "is-url";
 import React, { useState } from "react";
 
+interface Link {
+  id: number;
+  target_url: string;
+  short_code: string;
+  total_clicks: number;
+  last_clicked_at: string | null;
+}
+
 interface LinkData {
   target_url: string;
   short_code: string;
 }
 
 interface LinkFormProps {
-  onLinkCreated: (newLink: any) => void;
+  onLinkCreated: (newLink: Link) => void;
 }
 
 export default function LinkForm({ onLinkCreated }: LinkFormProps) {
@@ -72,13 +80,17 @@ export default function LinkForm({ onLinkCreated }: LinkFormProps) {
         const errorData = await response.json();
         setError(errorData.error || "Failed to create link.");
       } else {
-        const newLink = await response.json();
+        const newLink: Link = await response.json();
         setSuccess(`Link created! Short code: ${newLink.short_code}`);
         setFormData({ target_url: "", short_code: "" });
         onLinkCreated(newLink);
       }
     } catch (error) {
-      setError("An unexpected error occured");
+      if (error instanceof Error) {
+        setError(`An unexpected error occured: ${error.message}`);
+      } else {
+        setError("An unexpected error occured");
+      }
     } finally {
       setIsLoading(false);
     }

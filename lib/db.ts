@@ -6,12 +6,10 @@ if (!process.env.DATABASE_URL) {
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
-export const query = (text: string, params?: any[]) => {
-  console.log("Executing query: ", text);
+export const query = (text: string, params?: unknown[]) => {
+  console.log("Executing query:", text);
   return pool.query(text, params);
 };

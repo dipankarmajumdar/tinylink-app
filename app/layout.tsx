@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "TinyLink",
@@ -25,9 +26,9 @@ export default function RootLayout({
         <footer className="bg-gray-800 text-white p-4 mt-auto">
           <div className="container mx-auto text-center text-sm">
             © {new Date().getFullYear()} TinyLink. Health check:{" "}
-            <a href="/healthz" className="underline">
+            <Link href="/healthz" className="underline">
               /healthz
-            </a>
+            </Link>
           </div>
         </footer>
       </body>

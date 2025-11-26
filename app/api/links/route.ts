@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { generateShortCode, isUrl } from "@/lib/utils";
+import { DatabaseError } from "pg";
 
 export async function POST(request: NextRequest) {
   const { target_url, short_code: custom_code } = await request.json();
@@ -35,8 +36,10 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json(result.rows[0], { status: 201 });
-  } catch (error: any) {
-    if (error.code === "23505") {
+  } catch (error) {
+    const dbError = error as DatabaseError;
+
+    if (dbError.code === "23505") {
       return NextResponse.json(
         { error: `The short code "${short_code}" already exists.` },
         { status: 409 }

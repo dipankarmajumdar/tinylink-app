@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Copy, Trash2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface Link {
   short_code: string;
@@ -41,31 +42,35 @@ function TableRow({
   return (
     <tr className="border-b hover:bg-gray-50">
       <td className="p-3 text-indigo-600 font-medium">
-        <a
+        <Link
           href={shortUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="hover:underline"
         >
           /{link.short_code}
-        </a>
+        </Link>
       </td>
       <td className="p-3">
         <span title={link.target_url}>{truncateUrl(link.target_url)}</span>
       </td>
       <td className="p-3 whitespace-nowrap">
         <div className="flex space-x-2">
-          <button>
+          <button
+            onClick={handleCopy}
+            className="text-gray-500 hover:text-indigo-600 p-1 rounded-full bg-gray-100"
+            title="Copy Short URL"
+          >
             <Copy size={16} />
           </button>
 
-          <a
+          <Link
             href={`/code/${link.short_code}`}
             className="text-gray-500 hover:text-indigo-600 p-1 rounded-full bg-gray-100"
             title="View Stats"
           >
             <ArrowRight size={16} />
-          </a>
+          </Link>
 
           <button
             onClick={() => onDelete(link.short_code)}
@@ -113,7 +118,10 @@ export default function LinkTable({
           onChange={(e) => setFilter(e.target.value)}
           className="mt-2 sm:mt-0 p-2 border border-gray-300 rounded-md shadow-sm w-full sm:w-auto"
         />
-        <button className="mt-2 sm:mt-0 p-2 border-gray-300 rounded-md shadow-sm bg-gray-100 hover:bg-gray-200">
+        <button
+          onClick={onRefresh}
+          className="mt-2 sm:mt-0 p-2 border-gray-300 rounded-md shadow-sm bg-gray-100 hover:bg-gray-200"
+        >
           Refresh
         </button>
 
@@ -156,7 +164,7 @@ export default function LinkTable({
             </table>
             {filteredLinks.length === 0 && links.length > 0 && (
               <div className="text-center py-4 text-gray-500 border-t">
-                No results found for "{filter}"
+                No results found for {filter}
               </div>
             )}
           </div>
