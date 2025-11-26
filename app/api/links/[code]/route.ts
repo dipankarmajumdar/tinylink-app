@@ -3,7 +3,7 @@ import { query } from "@/lib/db";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: { code: string } }
 ) {
   const { code: short_code } = await params;
 
@@ -42,7 +42,7 @@ export async function DELETE(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: { code: string } }
 ) {
   const { code: short_code } = await params;
 

@@ -35,7 +35,7 @@ async function getLinkStats(code: string): Promise<LinkStats | null> {
 export default async function StatsPage({
   params,
 }: {
-  params: Promise<{ code: string }>;
+  params: { code: string };
 }) {
   const { code } = await params;
   const link = await getLinkStats(code);
