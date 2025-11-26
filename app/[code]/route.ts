@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
-  const short_code = params.code;
+  const { code: short_code } = await context.params;
 
   if (!short_code) {
     return NextResponse.json({ error: "Missing short code." }, { status: 404 });
@@ -13,19 +13,15 @@ export async function GET(
 
   try {
     const { rows } = await query(
-      `SELECT target_url
-       FROM links
-       WHERE short_code = $1`,
+      `SELECT target_url FROM links WHERE short_code = $1`,
       [short_code]
     );
 
-    const link = rows[0];
-
-    if (!link) {
+    if (rows.length === 0) {
       return NextResponse.json({ error: "Link not found" }, { status: 404 });
     }
 
-    const targetUrl = link.target_url;
+    const targetUrl = rows[0].target_url;
 
     await query(
       `UPDATE links
