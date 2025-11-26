@@ -15,7 +15,7 @@ interface Link {
 const BASE_URL =
   typeof window !== "undefined"
     ? window.location.origin
-    : "http://localhost:3000";
+    : "https://tinylink-app-kappa.vercel.app";
 
 export default function DashboardPage() {
   const [links, setLinks] = useState<Link[]>([]);

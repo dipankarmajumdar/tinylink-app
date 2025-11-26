@@ -15,7 +15,9 @@ const formatTime = (time: string | null) => {
 
 async function getLinkStats(code: string): Promise<LinkStats | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      "https://tinylink-app-kappa.vercel.app";
 
     const response = await fetch(`${baseUrl}/api/links/${code}`, {
       cache: "no-store",
@@ -63,7 +65,8 @@ export default async function StatsPage({
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://tinylink-app-kappa.vercel.app";
   const shortUrl = `${baseUrl}/${link.short_code}`;
 
   return (
