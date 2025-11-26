@@ -3,26 +3,26 @@ import { query } from "@/lib/db";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
-  const short_code = params.code;
+  const { code: short_code } = await params;
 
   if (!short_code) {
     return NextResponse.json(
-      { error: "Minning short code parameter." },
+      { error: "Missing short code parameter." },
       { status: 400 }
     );
   }
 
   try {
-    const { rowCount } = await query(
+    const result = await query(
       `DELETE FROM links
        WHERE short_code = $1
        RETURNING short_code`,
       [short_code]
     );
 
-    if (rowCount === 0) {
+    if (result.rowCount === 0) {
       return NextResponse.json(
         { error: `Link with code '${short_code}' not found.` },
         { status: 404 }
@@ -31,7 +31,8 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 200 });
   } catch (error) {
-    console.error("Database error: ", error);
+    console.error("Database error:", error);
+
     return NextResponse.json(
       { error: "Failed to delete the link." },
       { status: 500 }
@@ -41,9 +42,9 @@ export async function DELETE(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
-  const short_code = params.code;
+  const { code: short_code } = await params;
 
   if (!short_code) {
     return NextResponse.json(
@@ -60,9 +61,7 @@ export async function GET(
       [short_code]
     );
 
-    const link = rows;
-
-    if (!link) {
+    if (rows.length === 0) {
       return NextResponse.json(
         {
           error: `Link with code '${short_code}' not found.`,
@@ -71,11 +70,12 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(link, { status: 200 });
+    return NextResponse.json(rows[0], { status: 200 });
   } catch (error) {
-    console.error("Database Error: ", error);
+    console.error("Database Error:", error);
+
     return NextResponse.json(
-      { error: "Failed to retrive links stats." },
+      { error: "Failed to retrieve link stats." },
       { status: 500 }
     );
   }

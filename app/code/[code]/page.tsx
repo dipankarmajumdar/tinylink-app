@@ -1,4 +1,6 @@
-interface Link {
+import NextLink from "next/link";
+
+interface LinkStats {
   short_code: string;
   target_url: string;
   total_clicks: number;
@@ -11,25 +13,21 @@ const formatTime = (time: string | null) => {
   return new Date(time).toLocaleString();
 };
 
-async function getLinkStats(code: string): Promise<Link | null> {
+async function getLinkStats(code: string): Promise<LinkStats | null> {
   try {
-    const apiUrl = `${
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    }/api/links/${code}`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-    const response = await fetch(apiUrl, { cache: "no-store" });
+    const response = await fetch(`${baseUrl}/api/links/${code}`, {
+      cache: "no-store",
+    });
 
-    if (response.status === 404) {
-      return null;
-    }
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch stats: ${response.statusText}`);
-    }
+    if (response.status === 404) return null;
+    if (!response.ok)
+      throw new Error(`Failed to fetch: ${response.statusText}`);
 
     return response.json();
   } catch (error) {
-    console.error("Error fetching link stats:", error);
+    console.error("Error fetching stats:", error);
     return null;
   }
 }
@@ -37,9 +35,9 @@ async function getLinkStats(code: string): Promise<Link | null> {
 export default async function StatsPage({
   params,
 }: {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 }) {
-  const { code } = params;
+  const { code } = await params;
   const link = await getLinkStats(code);
 
   if (!link) {
@@ -55,19 +53,18 @@ export default async function StatsPage({
           </code>{" "}
           does not exist or has been deleted.
         </p>
-        <a
+        <NextLink
           href="/"
           className="mt-6 inline-block text-indigo-600 hover:text-indigo-800 underline"
         >
           Go to Dashboard
-        </a>
+        </NextLink>
       </div>
     );
   }
 
-  const shortUrl = `${
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-  }/${link.short_code}`;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const shortUrl = `${baseUrl}/${link.short_code}`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-4 sm:p-0">
@@ -80,6 +77,7 @@ export default async function StatsPage({
           Link Information
         </h2>
 
+        {/* Short URL */}
         <div className="border p-4 rounded-md bg-gray-50">
           <p className="text-sm font-medium text-gray-500">Short URL</p>
           <a
@@ -92,25 +90,24 @@ export default async function StatsPage({
           </a>
         </div>
 
+        {/* Target URL */}
         <div className="border p-4 rounded-md bg-gray-50">
           <p className="text-sm font-medium text-gray-500">Target URL</p>
           <p className="text-lg text-gray-800 break-all">{link.target_url}</p>
         </div>
 
+        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t mt-4">
-          {/* Total Clicks */}
           <StatCard
             title="Total Clicks"
             value={link.total_clicks}
             color="text-green-600"
           />
-
           <StatCard
             title="Last Clicked"
             value={formatTime(link.last_clicked_at)}
             color="text-blue-600"
           />
-
           <StatCard
             title="Link Created"
             value={formatTime(link.created_at)}
