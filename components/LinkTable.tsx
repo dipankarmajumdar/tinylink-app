@@ -19,6 +19,11 @@ interface LinkTableProps {
   onRefresh: () => void;
 }
 
+const formatTime = (time: string | null) => {
+  if (!time) return "N/A";
+  return new Date(time).toLocaleString();
+};
+
 const truncateUrl = (url: string, length: number = 50) => {
   if (url.length <= length) return url;
   return url.substring(0, length) + "...";
@@ -53,6 +58,10 @@ function TableRow({
       </td>
       <td className="p-3">
         <span title={link.target_url}>{truncateUrl(link.target_url)}</span>
+      </td>
+      <td className="p-3 hidden sm:table-cell">{link.total_clicks}</td>
+      <td className="p-3 hidden lg:table-cell text-sm">
+        {formatTime(link.last_clicked_at)}
       </td>
       <td className="p-3 whitespace-nowrap">
         <div className="flex space-x-2">
