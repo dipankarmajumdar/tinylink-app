@@ -9,6 +9,7 @@ interface Link {
   short_code: string;
   total_clicks: number;
   last_clicked_at: string | null;
+  created_at: string;
 }
 
 interface LinkData {
