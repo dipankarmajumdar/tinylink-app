@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { code: string } }
 ) {
   const short_code = params.code;
@@ -40,7 +40,7 @@ export async function DELETE(
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { code: string } }
 ) {
   const short_code = params.code;

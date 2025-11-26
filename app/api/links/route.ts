@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { generateShortCode, isUrl } from "@/lib/utils";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const { target_url, short_code: custom_code } = await request.json();
 
   if (!target_url || !isUrl(target_url)) {
